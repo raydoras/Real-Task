@@ -5,9 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    // Retorna um Flow, o que significa que a UI será notificada
-    // automaticamente sempre que os dados mudarem.
-    @Query("SELECT * FROM tasks ORDER BY timestamp DESC")
+    // Corrigido para ordenar por 'scheduledTime', que é o nome da coluna na entidade Task
+    @Query("SELECT * FROM tasks ORDER BY scheduledTime DESC")
     fun getAllTasks(): Flow<List<Task>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

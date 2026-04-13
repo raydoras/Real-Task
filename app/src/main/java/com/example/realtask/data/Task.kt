@@ -6,9 +6,8 @@ import androidx.room.PrimaryKey
 // Define que esta classe é uma tabela chamada "tasks" no SQLite
 @Entity(tableName = "tasks")
 data class Task(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0, // O ID é gerado automaticamente pelo banco
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val isDone: Boolean = false,
-    val timestamp: Long = System.currentTimeMillis() // Para ordenar as tarefas por data de criação
+    val scheduledTime: Long // Guardamos o horário da tarefa em milissegundos
 )
