@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -69,9 +68,4 @@ dependencies {
 
     // ViewModel e Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation(libs.firebase.firestore) // Adicionado Firestore
 }

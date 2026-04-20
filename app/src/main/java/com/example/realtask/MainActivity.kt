@@ -164,7 +164,7 @@ fun HomeScreen(viewModel: TaskViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Adicionar e Agendar")
+                Text("Agendar")
             }
 
             if (showDatePicker) {

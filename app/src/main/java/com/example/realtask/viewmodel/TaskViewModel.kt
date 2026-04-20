@@ -10,7 +10,6 @@ import androidx.work.workDataOf
 import com.example.realtask.data.Task
 import com.example.realtask.data.TaskDao
 import com.example.realtask.worker.NotifyWorker
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -19,9 +18,6 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class TaskViewModel(application: Application, private val dao: TaskDao) : AndroidViewModel(application) {
-
-    private val firestore = FirebaseFirestore.getInstance()
-    private val tasksCollection = firestore.collection("tasks")
 
     val tasks: StateFlow<List<Task>> = dao.getAllTasks()
         .stateIn(
@@ -32,26 +28,15 @@ class TaskViewModel(application: Application, private val dao: TaskDao) : Androi
 
     fun addTask(title: String, scheduledTime: Long, leadTimeMinutes: Int) {
         viewModelScope.launch {
-            // 1. Criar a tarefa para o Room
+            Log.d("RealTask", "Adicionando tarefa: $title com antecedência de $leadTimeMinutes min")
+            
             val localTask = Task(
                 title = title, 
                 scheduledTime = scheduledTime, 
                 leadTimeMinutes = leadTimeMinutes
             )
             
-            // 2. Salvar no Room e obter o ID (Long) gerado
-            val generatedId = dao.insertTask(localTask)
-            
-            // 3. Salvar no Firestore usando o ID convertido para String e enviando o objeto Task com o ID correto
-            val taskToSync = localTask.copy(id = generatedId.toInt())
-            
-            tasksCollection.document(generatedId.toString()).set(taskToSync)
-                .addOnSuccessListener { 
-                    Log.d("RealTask", "Sincronizado com Firestore: ${taskToSync.title}") 
-                }
-                .addOnFailureListener { e -> 
-                    Log.w("RealTask", "Salvo apenas localmente (Firestore offline/erro)", e) 
-                }
+            dao.insertTask(localTask)
         }
     }
 
@@ -59,18 +44,12 @@ class TaskViewModel(application: Application, private val dao: TaskDao) : Androi
         viewModelScope.launch {
             val updatedTask = task.copy(isDone = !task.isDone)
             dao.updateTask(updatedTask)
-            
-            // Atualiza no Firestore usando o ID do Room como chave do documento
-            tasksCollection.document(task.id.toString()).set(updatedTask)
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             dao.deleteTask(task)
-            
-            // Remove do Firestore
-            tasksCollection.document(task.id.toString()).delete()
         }
     }
 
