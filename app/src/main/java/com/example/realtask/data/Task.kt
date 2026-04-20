@@ -9,5 +9,6 @@ data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val isDone: Boolean = false,
-    val scheduledTime: Long // Guardamos o horário da tarefa em milissegundos
+    val scheduledTime: Long, // Guardamos o horário da tarefa em milissegundos
+    val leadTimeMinutes: Int = 5 // Novo campo para a antecedência do aviso
 )

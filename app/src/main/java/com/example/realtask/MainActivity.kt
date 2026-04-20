@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.realtask.data.AppDatabase
 import com.example.realtask.data.Task
 import com.example.realtask.ui.theme.RealTaskTheme
@@ -73,8 +74,6 @@ fun HomeScreen(viewModel: TaskViewModel) {
     val datePickerState = rememberDatePickerState()
     val timePickerState = rememberTimePickerState()
 
-    // CORREÇÃO: O DatePicker retorna milissegundos em UTC (meia-noite).
-    // Para exibir o dia correto no botão, o formatador também deve usar UTC.
     val dateFormatter = remember {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
             timeZone = TimeZone.getTimeZone("UTC")
@@ -138,7 +137,6 @@ fun HomeScreen(viewModel: TaskViewModel) {
                     val dateMillis = datePickerState.selectedDateMillis
                     if (newTaskName.isNotBlank() && dateMillis != null) {
                         
-                        // Extraímos os campos UTC para montar o calendário local corretamente
                         val utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
                             timeInMillis = dateMillis
                         }
@@ -156,7 +154,8 @@ fun HomeScreen(viewModel: TaskViewModel) {
                         val finalTimestamp = calendar.timeInMillis
                         Log.d("RealTask", "Tarefa: $newTaskName | Agendado para: ${Date(finalTimestamp)}")
 
-                        viewModel.addTask(newTaskName, finalTimestamp)
+                        // Passando também o leadTimeMinutes para salvar no banco
+                        viewModel.addTask(newTaskName, finalTimestamp, selectedLeadTime)
                         viewModel.scheduleTaskWithLeadTime(newTaskName, finalTimestamp, selectedLeadTime)
 
                         newTaskName = ""
@@ -223,11 +222,20 @@ fun TaskRow(task: Task, onCheckedChange: () -> Unit, onDelete: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = task.title, style = MaterialTheme.typography.bodyLarge)
                 val timeFormat = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
-                Text(
-                    text = "Agendado para: ${timeFormat.format(Date(task.scheduledTime))}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Agendado para: ${timeFormat.format(Date(task.scheduledTime))}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // Exibe a antecedência de forma bem pequena e discreta
+                    Text(
+                        text = "(-${task.leadTimeMinutes}min)",
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)

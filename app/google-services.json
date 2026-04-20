@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987775213394",
+    "project_id": "real-task-5c064",
+    "storage_bucket": "real-task-5c064.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987775213394:android:2ffa45f28cb507cd49a48b",
+        "android_client_info": {
+          "package_name": "com.example.realtask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7mG1eyqe1819i6-kcSaA1U3PDAEmEuQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
